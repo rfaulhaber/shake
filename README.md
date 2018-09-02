@@ -1,4 +1,7 @@
 # shake
+[![pipeline status](https://gitlab.com/rfaulhaber/shake/badges/master/pipeline.svg)](https://gitlab.com/rfaulhaber/shake/commits/master)
+[![coverage report](https://gitlab.com/rfaulhaber/shake/badges/master/coverage.svg)](https://gitlab.com/rfaulhaber/shake/commits/master)
+
 Rhymes with "make". A work in progress.
 
 ## Install
