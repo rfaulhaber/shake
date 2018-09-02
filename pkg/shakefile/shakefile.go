@@ -13,7 +13,7 @@ import (
 
 type Shakefile struct {
 	Targets map[string][]string
-	Vars map[string]string
+	Vars    map[string]string
 }
 
 func DecodeFile(reader io.Reader) (Shakefile, error) {
@@ -56,12 +56,13 @@ func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Write
 		args := command[1:]
 
 		for index, arg := range args {
-			if strings.HasPrefix(arg, "$") && sf.Vars[arg[1:]] !=  "" {
+			if strings.HasPrefix(arg, "$") && sf.Vars[arg[1:]] != "" {
 				args[index] = sf.Vars[arg[1:]]
 			}
 		}
 
 		cmd := exec.Command(command[0], command[1:]...)
+		// TODO: cmd.Env = os.Environ() + all sf.Vars fields
 		cmd.Stdout = outWriter
 		cmd.Stderr = errorWriter
 
