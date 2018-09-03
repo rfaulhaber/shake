@@ -14,6 +14,7 @@ import (
 type Shakefile struct {
 	Targets map[string][]string
 	Vars    map[string]string
+	Default string
 }
 
 func DecodeFile(reader io.Reader) (Shakefile, error) {

@@ -27,8 +27,18 @@ var rootCmd = &cobra.Command{
 		}
 
 		if len(args) == 0 {
-			for target := range file.Targets {
-				if err = runTarget(file, target); err != nil {
+			if file.Default == "" && len(file.Targets) == 1 {
+				if len(file.Targets) == 1 {
+					for target := range file.Targets {
+						if err = runTarget(file, target); err != nil {
+							stderr.Fatalln(err)
+						}
+					}
+				} else {
+					stderr.Fatalln(`no "default" found, more than one target specified. exiting`)
+				}
+			} else {
+				if err = runTarget(file, file.Default); err != nil {
 					stderr.Fatalln(err)
 				}
 			}
