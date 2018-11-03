@@ -80,7 +80,7 @@ func TestShakefile_Run(t *testing.T) {
 		var errReader bytes.Buffer
 
 		tc.shakefile.SetEnv()
-		err := tc.shakefile.Run(tc.target, &outReader, &errReader)
+		err := tc.shakefile.Run(tc.target, &outReader, &errReader, RunContext{true, false})
 
 		if err != nil {
 			assert.Equal(t, err.Error(), tc.expectedErr)

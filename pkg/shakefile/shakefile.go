@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+type RunContext struct {
+	Quiet bool
+	Silent bool
+}
+
 type Shakefile struct {
 	Targets map[string][]string
 	Vars    map[string]string
@@ -45,7 +50,7 @@ func (sf Shakefile) SetEnv() error {
 	return nil
 }
 
-func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Writer) error {
+func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Writer, context RunContext) error {
 	targetCmds := sf.Targets[target]
 
 	if targetCmds == nil {
@@ -64,12 +69,18 @@ func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Write
 			}
 		}
 
+
 		cmd := exec.Command(command[0], command[1:]...)
 		// TODO: cmd.Env = os.Environ() + all sf.Vars fields
-		cmd.Stdout = outWriter
-		cmd.Stderr = errorWriter
 
-		fmt.Fprintf(outWriter, "%s %d/%d:  %s\n", target, cmdCount + 1, steps, commandLine)
+		if !context.Silent {
+			cmd.Stdout = outWriter
+			cmd.Stderr = errorWriter
+		}
+
+		if !context.Quiet && !context.Silent {
+			fmt.Fprintf(outWriter, "%s %d/%d:  %s\n", target, cmdCount+1, steps, commandLine)
+		}
 
 		if err := cmd.Run(); err != nil {
 			return err

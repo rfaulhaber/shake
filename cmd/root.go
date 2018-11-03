@@ -12,14 +12,16 @@ import (
 )
 
 var (
-	stderr = log.New(os.Stderr, "shake: ", 0)
+	stderr     = log.New(os.Stderr, "shake: ", 0)
+	quietFlag bool
+	silentFlag    bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "shake [OPTIONS] [TARGETS]",
 	Short: "Automated target-based building and deployment system",
 	Long:  `Automated target-based building and deployment system`,
-	Run: runShake,
+	Run:   runShake,
 }
 
 func Execute() {
@@ -27,6 +29,11 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func init() {
+	rootCmd.Flags().BoolVarP(&quietFlag, "quiet", "q", false, "Suppresses shake output to stdout, but not command output")
+	rootCmd.Flags().BoolVarP(&silentFlag, "silent", "s", false, "Suppresses all output to stdout")
 }
 
 func runShake(cmd *cobra.Command, args []string) {
@@ -68,8 +75,7 @@ func readShakefile() (shakefile.Shakefile, error) {
 
 	for _, info := range infos {
 		filename := info.Name()
-		ext := filepath.Ext(filename)
-		name := filename[0:len(filename)-len(ext)]
+		name := filenameWithoutExt(filename)
 
 		if name == "Shakefile" {
 			shakefileName = filename
@@ -91,9 +97,14 @@ func readShakefile() (shakefile.Shakefile, error) {
 }
 
 func runTarget(file shakefile.Shakefile, target string) error {
-	if err := file.Run(target, os.Stdout, os.Stderr); err != nil {
+	if err := file.Run(target, os.Stdout, os.Stderr, shakefile.RunContext{}); err != nil {
 		return errors.Wrap(err, fmt.Sprintf("running target %s", target))
 	}
 
 	return nil
+}
+
+func filenameWithoutExt(filename string) string {
+	ext := filepath.Ext(filename)
+	return filename[0 : len(filename)-len(ext)]
 }
