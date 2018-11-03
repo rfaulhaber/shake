@@ -52,7 +52,9 @@ func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Write
 		return errors.New(fmt.Sprintf(`no target called "%s"`, target))
 	}
 
-	for _, commandLine := range targetCmds {
+	steps := len(targetCmds)
+
+	for cmdCount, commandLine := range targetCmds {
 		command := strings.Split(commandLine, " ")
 		args := command[1:]
 
@@ -66,6 +68,8 @@ func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Write
 		// TODO: cmd.Env = os.Environ() + all sf.Vars fields
 		cmd.Stdout = outWriter
 		cmd.Stderr = errorWriter
+
+		fmt.Fprintf(outWriter, "%s %d/%d:  %s\n", target, cmdCount + 1, steps, commandLine)
 
 		if err := cmd.Run(); err != nil {
 			return err

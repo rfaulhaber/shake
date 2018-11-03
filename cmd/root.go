@@ -19,43 +19,45 @@ var rootCmd = &cobra.Command{
 	Use:   "shake [OPTIONS] [TARGETS]",
 	Short: "Automated target-based building and deployment system",
 	Long:  `Automated target-based building and deployment system`,
-	Run: func(cmd *cobra.Command, args []string) {
-		file, err := readShakefile()
-
-		if err != nil {
-			stderr.Fatalln(err)
-		}
-
-		if len(args) == 0 {
-			if file.Default == "" && len(file.Targets) == 1 {
-				if len(file.Targets) == 1 {
-					for target := range file.Targets {
-						if err = runTarget(file, target); err != nil {
-							stderr.Fatalln(err)
-						}
-					}
-				} else {
-					stderr.Fatalln(`no "default" found, more than one target specified. exiting`)
-				}
-			} else {
-				if err = runTarget(file, file.Default); err != nil {
-					stderr.Fatalln(err)
-				}
-			}
-		} else {
-			for _, target := range args {
-				if err = runTarget(file, target); err != nil {
-					stderr.Fatalln(err)
-				}
-			}
-		}
-	},
+	Run: runShake,
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+func runShake(cmd *cobra.Command, args []string) {
+	file, err := readShakefile()
+
+	if err != nil {
+		stderr.Fatalln(err)
+	}
+
+	if len(args) == 0 {
+		if file.Default == "" && len(file.Targets) == 1 {
+			if len(file.Targets) == 1 {
+				for target := range file.Targets {
+					if err = runTarget(file, target); err != nil {
+						stderr.Fatalln(err)
+					}
+				}
+			} else {
+				stderr.Fatalln(`no "default" found, more than one target specified. exiting`)
+			}
+		} else {
+			if err = runTarget(file, file.Default); err != nil {
+				stderr.Fatalln(err)
+			}
+		}
+	} else {
+		for _, target := range args {
+			if err = runTarget(file, target); err != nil {
+				stderr.Fatalln(err)
+			}
+		}
 	}
 }
 
