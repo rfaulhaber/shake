@@ -12,7 +12,7 @@ import (
 )
 
 type RunContext struct {
-	Quiet bool
+	Quiet  bool
 	Silent bool
 }
 
@@ -20,6 +20,7 @@ type Shakefile struct {
 	Targets map[string][]string
 	Vars    map[string]string
 	Default string
+	Requires string
 }
 
 func DecodeFile(reader io.Reader) (Shakefile, error) {
@@ -68,7 +69,6 @@ func (sf Shakefile) Run(target string, outWriter io.Writer, errorWriter io.Write
 				args[index] = sf.Vars[arg[1:]]
 			}
 		}
-
 
 		cmd := exec.Command(command[0], command[1:]...)
 		// TODO: cmd.Env = os.Environ() + all sf.Vars fields

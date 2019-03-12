@@ -1,6 +1,6 @@
 package main
 
-import "github.com/rfaulhaber/shake/cmd"
+import "shake/cmd"
 
 func main() {
 	cmd.Execute()

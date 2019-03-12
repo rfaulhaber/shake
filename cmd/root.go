@@ -3,24 +3,24 @@ package cmd
 import (
 	"fmt"
 	"github.com/pkg/errors"
-	"github.com/rfaulhaber/shake/pkg/shakefile"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"shake/pkg/shakefile"
 )
 
 var (
 	stderr     = log.New(os.Stderr, "shake: ", 0)
-	quietFlag bool
-	silentFlag    bool
+	quietFlag  bool
+	silentFlag bool
 )
 
 var rootCmd = &cobra.Command{
 	Use:   "shake [OPTIONS] [TARGETS]",
-	Short: "Automated target-based building and deployment system",
-	Long:  `Automated target-based building and deployment system`,
+	Short: "Target-based script execution",
+	Long:  `Target-based script execution`,
 	Run:   runShake,
 }
 
